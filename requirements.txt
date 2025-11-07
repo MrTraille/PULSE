@@ -1,0 +1,6 @@
+flask
+pyyaml
+python-slugify
+requests
+pywebview
+gunicorn

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Projets - AngryTode{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <!-- <h1 class="h4 mb-1">Mes projets</h1>
+      <p class="text-muted small mb-0">
+        Planning de sorties, deadlines et checklists centralisées.
+      </p> -->
+    </div>
+  </div>
+
+  <!-- Formulaire de création -->
+<form method="post" action="{{ url_for('new_project') }}" class="new-project-form card bg-dark border-secondary mb-4">
+  <div class="card-body">
+    <h2 class="h6 mb-3">Nouveau projet</h2>
+
+    <div class="mb-3">
+      <label for="title" class="form-label">Titre</label>
+      <input id="title" name="title" type="text" class="form-control" placeholder="Nom du morceau" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="artist" class="form-label">Artiste</label>
+      <input id="artist" name="artist" type="text" class="form-control" placeholder="Nom de l'artiste">
+    </div>
+
+    <div class="mb-3">
+      <label for="label" class="form-label">Label</label>
+      <input id="label" name="label" type="text" class="form-control" placeholder="Nom du label">
+    </div>
+
+    <div class="mb-3">
+      <label for="style" class="form-label">Style / genre</label>
+      <select id="style" name="style" class="form-select">
+        <option value="">-- choisir --</option>
+        <option>Synthwave</option>
+        <option>Lofi</option>
+        <option>Metal</option>
+        <option>Chiptune</option>
+        <option>Symphonique</option>
+        <option>Cinématique</option>
+        <option>Autre</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="release_date" class="form-label">Date de sortie</label>
+      <input id="release_date" name="release_date" type="date" class="form-control" required>
+    </div>
+  <div class="mt-3">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="use_spotify_canvas"
+        name="use_spotify_canvas"
+      >
+      <label class="form-check-label small" for="use_spotify_canvas">
+        Prévoir un Canvas Spotify
+      </label>
+    </div>
+
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="use_paid_ads"
+        name="use_paid_ads"
+      >
+      <label class="form-check-label small" for="use_paid_ads">
+        Prévoir une campagne de pub payante (Meta / Instagram / TikTok)
+      </label>
+    </div>
+  </div>
+
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-sm btn-outline-light">Créer</button>
+    </div>
+  </div>
+</form>
+
+
+  <!-- Liste des projets -->
+  {% if projects %}
+    <div class="project-list">
+      {% for p in projects %}
+        <article class="project-card">
+          <div class="project-main">
+            <div class="project-title-row">
+              <h2 class="h6 mb-0">{{ p.title }}</h2>
+              {% set badge_class = "bg-dark" %}
+              {% if p.status == "Programmé" %}
+                {% set badge_class = "bg-dark" %}
+              {% elif p.status == "En cours" %}
+                {% set badge_class = "bg-info" %}
+              {% elif p.status == "Sortie" %}
+                {% set badge_class = "bg-success" %}
+              {% endif %}
+            <span class="pill-badge
+              {{ 'status-programme' if p.status=='Programmé'
+                else ('status-en-cours' if p.status=='En cours' else 'status-sortie') }}">
+              {{ p.status }}
+            </span>
+            </div>
+
+            <!-- Ligne 1 : Artiste • style • label -->
+            <div class="project-meta">
+              <span class="project-artist">{{ p.artist }}</span>
+              {% if p.genre %}
+                • <span class="project-genre">{{ p.genre }}</span>
+              {% endif %}
+              • <span class="project-label-inline">{{ p.label }}</span>
+            </div>
+
+            <!-- Ligne 2 : Date de sortie -->
+            <div class="project-date-line small text-muted">
+              Date de sortie : {{ p.release_date }}
+            </div>
+          </div>
+
+
+
+          <div class="project-actions">
+            {% if not p.is_released %}
+              <a href="{{ url_for('project_detail', slug=p.slug) }}" class="btn btn-sm btn-outline-light">
+                Voir le projet
+              </a>
+            {% else %}
+              <a href="{{ url_for('project_detail', slug=p.slug) }}" class="btn btn-sm btn-outline-secondary">
+                Historique
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">
+      Aucun projet pour l'instant.
+    </p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }} - AngryTode{% endblock %}
+
+{% block content %}
+
+  <div class="mb-4">
+    <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-secondary mb-2">
+      ← Retour aux projets
+    </a>
+    <h1 class="h3 mb-1">{{ project.title }}</h1>
+    <div class="text-muted small">
+      {{ project.artist or "AngryTode" }}
+      • Sortie cible : <strong>{{ release_date }}</strong>
+    </div>
+  </div>
+
+  <!-- Onglets -->
+  <ul class="nav nav-tabs" id="projectTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview-tab-pane" type="button" role="tab">
+        Aperçu
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#checklist-tab-pane" type="button" role="tab">
+        Checklist
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="deadline-tab" data-bs-toggle="tab" data-bs-target="#deadline-tab-pane" type="button" role="tab">
+        Deadline
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="projectTabsContent">
+
+    <!-- APERÇU -->
+    <div class="tab-pane fade show active" id="overview-tab-pane" role="tabpanel">
+      <div class="row mt-3 g-3">
+        <!-- Infos projet -->
+        <div class="col-md-6">
+          <div class="card bg-dark border-secondary h-100">
+            <div class="card-body">
+              <h2 class="h6 mb-3">Infos projet</h2>
+              <dl class="row mb-0 small">
+                <dt class="col-4">Titre</dt>
+                <dd class="col-8">{{ project.title or slug }}</dd>
+
+                <dt class="col-4">Artiste</dt>
+                <dd class="col-8">{{ project.artist or slug }}</dd>
+
+                <dt class="col-4">Label</dt>
+                <dd class="col-8">{{ project.label or slug }}</dd>
+
+                <dt class="col-4">Genre</dt>
+                <dd class="col-8">{{ project.genre or "N/A" }}</dd>
+
+                {% if project.use_spotify_canvas is defined %}
+                  <dt class="col-4">Canvas Spotify</dt>
+                  <dd class="col-8">
+                    {% if project.use_spotify_canvas %}Prévu{% else %}Non prévu{% endif %}
+                  </dd>
+                {% endif %}
+
+                {% if project.use_paid_ads is defined %}
+                  <dt class="col-4">Campagne pub payante</dt>
+                  <dd class="col-8">
+                    {% if project.use_paid_ads %}Prévue{% else %}Non prévue{% endif %}
+                  </dd>
+                {% endif %}
+
+                <dt class="col-4">Sortie</dt>
+                <dd class="col-8">{{ release_date }}</dd>
+
+                {% if project.master_lufs_target %}
+                  <dt class="col-4">Master cible</dt>
+                  <dd class="col-8">{{ project.master_lufs_target }}</dd>
+                {% endif %}
+
+                {% if project.spotify_playlists %}
+                  <dt class="col-4">Playlists Spotify</dt>
+                  <dd class="col-8">
+                    <ul class="list-unstyled mb-0">
+                      {% for pl in project.spotify_playlists %}
+                        <li class="small">• {{ pl }}</li>
+                      {% endfor %}
+                    </ul>
+                  </dd>
+                {% endif %}
+
+                {% if project.other_playlists %}
+                  <dt class="col-4">Autres playlists</dt>
+                  <dd class="col-8">
+                    <ul class="list-unstyled mb-0">
+                      {% for pl in project.other_playlists %}
+                        <li class="small">• {{ pl }}</li>
+                      {% endfor %}
+                    </ul>
+                  </dd>
+                {% endif %}
+
+                {% if project.genre_notes %}
+                  <dt class="col-4">Notes genre</dt>
+                  <dd class="col-8 small text-muted">{{ project.genre_notes }}</dd>
+                {% endif %}
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes éditables -->
+        <div class="col-md-6">
+          <div class="card bg-dark border-secondary h-100">
+            <div class="card-body">
+              <h2 class="h6 mb-3">Notes</h2>
+              <form method="post" action="{{ url_for('update_notes', slug=slug) }}">
+                <textarea
+                  class="form-control form-control-sm mb-2"
+                  name="notes"
+                  rows="6"
+                  placeholder="Ajouter des notes...">{{ notes }}</textarea>
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-sm btn-outline-light">
+                    Enregistrer
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- CHECKLIST -->
+    <div class="tab-pane fade" id="checklist-tab-pane" role="tabpanel">
+      <div class="mt-3">
+        {% if checklist_sections %}
+          <div class="release-timeline">
+            {% for section in checklist_sections %}
+              <div class="release-timeline-item">
+
+                {% if section.offset is not none %}
+                  <div class="release-timeline-offset">
+                    <div class="offset-pill badge rounded-pill bg-dark border border-secondary">
+                      J{% if section.offset > 0 %}+{% endif %}{{ section.offset }}
+                    </div>
+                  </div>
+                {% endif %}
+
+                <div class="card bg-dark border-secondary shadow-sm {% if section.all_done %}timeline-card-complete{% endif %}">
+                  <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="small fw-semibold">
+                        {{ section.title }}
+                      </span>
+
+                      {% if section.offset is not none or section.date_str %}
+                        <span class="badge rounded-pill bg-dark border border-secondary small">
+                          {% if section.date_str %}
+                            {{ section.date_str }}
+                          {% endif %}
+                        </span>
+                      {% endif %}
+                    </div>
+
+                    <ul class="small mb-0 ps-3">
+                      {% for t in section.tasks %}
+                        <li class="timeline-task {% if t.done %}text-muted text-decoration-line-through{% endif %}"
+                            data-task="{{ t.text }}">
+                          {{ t.text }}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">Aucune checklist disponible.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- DEADLINE -->
+    <div class="tab-pane fade" id="deadline-tab-pane" role="tabpanel">
+      <div class="mt-3">
+        {% if deadline_sections %}
+          {% for section in deadline_sections %}
+            <div
+              class="card bg-dark border-secondary mb-3 deadline-card {% if section.all_done %}deadline-card-complete{% endif %}"
+              data-auto-hide="{{ 1 if section.auto_hide else 0 }}"
+            >
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <h2 class="h6 mb-0">{{ section.title }}</h2>
+                    <span class="badge bg-success text-dark small deadline-status {% if not section.all_done %}d-none{% endif %}">
+                      Terminée
+                    </span>
+                  </div>
+                  {% if section.offset is not none or section.date_str %}
+                    <span class="badge rounded-pill bg-dark border border-secondary small">
+                      {% if section.offset is not none %}
+                        J{% if section.offset > 0 %}+{% endif %}{{ section.offset }}
+                      {% endif %}
+                      {% if section.date_str %}
+                        · {{ section.date_str }}
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                </div>
+
+                <ul class="list-group">
+                  {% for t in section.tasks %}
+                    <li class="list-group-item bg-dark text-light border-secondary">
+                      <label class="d-flex align-items-center w-100" style="cursor: pointer;">
+                        <input
+                          class="form-check-input me-2"
+                          type="checkbox"
+                          data-task="{{ t.text }}"
+                          {% if t.done %}checked{% endif %}
+                          onchange="toggleDeadlineTask('{{ slug }}', this)"
+                        >
+                        <span class="small deadline-task-label {% if t.done %}text-muted text-decoration-line-through{% endif %}">
+                          {{ t.text }}
+                        </span>
+                      </label>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted">
+            Aucune capsule en retard ou à faire aujourd'hui.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+<form method="post" action="{{ url_for('delete_project', slug=slug) }}" id="delete-form">
+  <div class="d-flex align-items-center gap-2">
+    <button type="button" class="btn btn-outline-danger" id="delete-trigger">
+      Supprimer ce projet
+    </button>
+    <div id="delete-confirm" class="d-none">
+      <span class="text-warning me-2">Confirmer ?</span>
+      <button type="submit" class="btn btn-danger btn-sm me-1">Oui</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="delete-cancel">Non</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const triggerBtn = document.querySelector('button[data-bs-target="' + hash + '"]');
+    if (triggerBtn) {
+      const tab = new bootstrap.Tab(triggerBtn);
+      tab.show();
+    }
+  });
+
+  function toggleDeadlineTask(slug, checkbox) {
+    const taskText = checkbox.getAttribute("data-task");
+    const formData = new FormData();
+    formData.append("task_text", taskText);
+
+    fetch(`/project/${slug}/toggle_deadline_task`, {
+      method: "POST",
+      body: formData,
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) {
+        checkbox.checked = !checkbox.checked;
+        console.error(data.error || "Erreur inconnue");
+        return;
+      }
+
+      const label = checkbox.closest("li").querySelector(".deadline-task-label");
+      if (data.done) {
+        label.classList.add("text-muted", "text-decoration-line-through");
+      } else {
+        label.classList.remove("text-muted", "text-decoration-line-through");
+      }
+
+      const tasksInTimeline = document.querySelectorAll('.timeline-task');
+      let parentTimelineCard = null;
+
+      tasksInTimeline.forEach(el => {
+        if (el.getAttribute('data-task') === taskText) {
+          if (data.done) {
+            el.classList.add('text-muted', 'text-decoration-line-through');
+          } else {
+            el.classList.remove('text-muted', 'text-decoration-line-through');
+          }
+          parentTimelineCard = el.closest('.card');
+        }
+      });
+
+      if (parentTimelineCard) {
+        const tasksInCard = parentTimelineCard.querySelectorAll('.timeline-task');
+        const allDoneTimeline = Array.from(tasksInCard).every(t =>
+          t.classList.contains('text-decoration-line-through')
+        );
+        if (allDoneTimeline) {
+          parentTimelineCard.classList.add('timeline-card-complete');
+        } else {
+          parentTimelineCard.classList.remove('timeline-card-complete');
+        }
+      }
+
+      const card = checkbox.closest('.deadline-card');
+      if (card) {
+        const checkboxes = card.querySelectorAll('input[type="checkbox"]');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        const statusBadge = card.querySelector('.deadline-status');
+        const autoHide = card.dataset.autoHide === "1";
+
+        if (allChecked) {
+          card.classList.add('deadline-card-complete');
+          if (statusBadge) statusBadge.classList.remove('d-none');
+          if (autoHide) {
+            setTimeout(() => { card.remove(); }, 800);
+          }
+        } else {
+          card.classList.remove('deadline-card-complete');
+          if (statusBadge) statusBadge.classList.add('d-none');
+        }
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      checkbox.checked = !checkbox.checked;
+    });
+  }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const trigger = document.getElementById('delete-trigger');
+  const confirmBox = document.getElementById('delete-confirm');
+  const cancel = document.getElementById('delete-cancel');
+
+  if (!trigger || !confirmBox || !cancel) return;
+
+  trigger.addEventListener('click', function (e) {
+    e.preventDefault();
+    trigger.classList.add('d-none');
+    confirmBox.classList.remove('d-none');
+  });
+
+  cancel.addEventListener('click', function () {
+    confirmBox.classList.add('d-none');
+    trigger.classList.remove('d-none');
+  });
+});
+
+</script>
+{% endblock %}

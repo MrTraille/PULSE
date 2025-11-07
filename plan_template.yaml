@@ -1,0 +1,82 @@
+release_plan:
+  - id: j35
+    day_offset: -35
+    title: "Préparation du master & métadonnées"
+    tasks:
+      - Masteriser le titre
+      - Préparer le fichier WAV 24 bits et les exports nécessaires
+      - Préparer la fiche métadonnées (titre, artiste, compositeur, parolier, genre, BPM, tonalité, etc.)
+
+  - id: j28
+    day_offset: -28
+    title: "Création des visuels & teaser"
+    tasks:
+      - Créer la cover 3000x3000 px
+      - Créer un teaser vertical (9:16)
+      - Créer ou préparer le visuel / visualizer YouTube 16:9
+      - Exporter les différents formats (story, carré, etc.)
+
+  - id: j24
+    day_offset: -24
+    title: "Soumission à la distribution (DistroKid, etc.)"
+    tasks:
+      - Créer ou vérifier le compte de distribution
+      - Uploader le master et la cover
+      - Saisir les métadonnées et crédits à partir de la fiche préparée
+      - Vérifier ou générer les codes ISRC/UPC
+      - Choisir la date de sortie et les territoires
+      - "[opt_spotify_canvas] Préparer le Canvas Spotify (8s, loop propre)"
+
+  - id: j21
+    day_offset: -21
+    title: "Pré-save & optimisation du profil"
+    tasks:
+      - Récupérer ou créer le lien Pre-save / smartlink
+      - Revendiquer / MAJ les profils Spotify/Tidal/Amazon/Apple Music for artists, Deezer for creators.
+      - Mettre le lien pre-save dans la bio / smartlink principal
+      - Publier un premier Reel / stories pour annoncer la pré-save et inviter à cliquer
+      - "[opt_paid_ads] Préparer la campagne de pub" 
+
+  - id: j14
+    day_offset: -14
+    title: "Pitch Spotify Editorial & textes"
+    tasks:
+      - Remplir le pitch Spotify for Artists pour la sortie
+      - Rédiger la description courte du morceau
+      - Rédiger les textes pour posts / stories / TikTok
+      - Vérifier le statut du Pre-save et de la sortie dans le dashboard
+      - Rappel pré-save (story ou reel)
+      - "[opt_spotify_canvas] Uploader le Canvas Spotify" 
+
+  - id: j7
+    day_offset: -7
+    title: "Communication pré-sortie & planning réseaux"
+    tasks:
+      - Programmer la diffusion du teaser vertical
+      - Programmer la publication du visuel / visualizer YouTube
+      - Vérifier tous les liens (smartlink, pré-save, bios, profils)
+
+  - id: j0
+    day_offset: 0
+    title: "Jour de sortie"
+    tasks:
+      - Publier le smartlink ou le lien Spotify principal
+      - Poster la release sur les réseaux
+      - Mettre à jour la bio / les liens pour mettre le morceau en avant
+      - Fixer le titre en "Titre à la une" sur spotify si besoin
+
+  - id: jp3
+    day_offset: 3
+    title: "Relance post-sortie (J+3)"
+    tasks:
+      - Partager un extrait du morceau ou un clip alternatif / backstage / behind the scenes
+      - Partager les premiers retours / stats / playlists obtenues
+      - Répondre aux commentaires et messages autour de la sortie
+
+  - id: jp7
+    day_offset: 7
+    title: "Relance post-sortie (J+7)"
+    tasks:
+      - Publier un contenu making-of ou contexte autour du morceau / backstage / behind the scenes
+      - Mettre le titre en avant dans une playlist maison
+      - Faire un dernier post de relance ciblé (study / chill / synthwave, etc.)
