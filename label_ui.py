@@ -6,12 +6,25 @@ import yaml
 import label_agent
 import os
 import requests
+import sys
 
 
 app = Flask(__name__)
 
-ROOT = Path(__file__).parent
-PROJECTS_DIR = ROOT / "projects"
+# Dossier de l'app (templates, plan_template.yaml)
+if getattr(sys, "frozen", False):
+    ROOT = Path(sys._MEIPASS)
+else:
+    ROOT = Path(__file__).parent.resolve()
+
+# Dossier où stocker les projets
+if getattr(sys, "frozen", False):
+    # ex : C:\Users\cyril\AppData\Local\PulseProjects
+    base = Path.home() / "AppData" / "Local"
+    PROJECTS_DIR = base / "PulseProjects"
+else:
+    PROJECTS_DIR = ROOT / "projects"
+
 TEMPLATE_FILE = ROOT / "plan_template.yaml"
 
 # -------------------------------------------------------------------
@@ -58,7 +71,12 @@ def load_yaml(path: Path):
     if not path.exists():
         return {}
     with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        data = yaml.safe_load(f)
+        if data is None:
+            return {}
+        if not isinstance(data, dict):
+            return {}
+        return data
 
 
 def format_days(delta: int):
@@ -66,7 +84,7 @@ def format_days(delta: int):
     if delta is None:
         return ""
     if delta == 0:
-        return "aujourd'hui 🎉"
+        return "aujourd'hui!"
     elif delta == 1:
         return "dans 1 jour"
     elif delta > 1:
@@ -282,7 +300,8 @@ def index():
         for p in PROJECTS_DIR.iterdir():
             if p.is_dir() and (p / "project.yaml").exists():
                 data = load_yaml(p / "project.yaml")
-
+                if not isinstance(data, dict):
+                    continue
                 release_str = data.get("release_date")
                 release_display = "N/A"
                 sort_key = "9999-12-31"
@@ -293,9 +312,8 @@ def index():
                 if release_str:
                     try:
                         rd = datetime.strptime(release_str, "%Y-%m-%d").date()
-                        # format long pour les capsules index : "01 décembre 2025"
                         release_display = format_date_long_fr(rd)
-                        sort_key = release_str  # garde l'ISO pour le tri
+                        sort_key = release_str
                         if rd <= today:
                             is_released = True
                             status = "Sortie"
@@ -418,36 +436,52 @@ def delete_project(slug):
 
 @app.route("/new_project", methods=["POST"])
 def new_project():
-    title = request.form.get("title", "").strip()
-    style = request.form.get("style", "").strip()
-    artist = request.form.get("artist", "").strip() or "AngryTode"
-    label_name = request.form.get("label", "").strip() or "Indépendant"
-    release_str = request.form.get("release_date", "").strip()
-    use_spotify_canvas = bool(request.form.get("use_spotify_canvas"))
-    use_paid_ads = bool(request.form.get("use_paid_ads"))
-
-    if not title or not release_str:
-        return redirect(url_for("index"))
+    from traceback import print_exc
 
     try:
-        release_date = datetime.strptime(release_str, "%Y-%m-%d")
-    except ValueError:
+        title = request.form.get("title", "").strip()
+        style = request.form.get("style", "").strip()
+        artist = request.form.get("artist", "").strip() or "AngryTode"
+        label_name = request.form.get("label", "").strip() or "Indépendant"
+        release_str = request.form.get("release_date", "").strip()
+        use_spotify_canvas = bool(request.form.get("use_spotify_canvas"))
+        use_paid_ads = bool(request.form.get("use_paid_ads"))
+
+        if not title or not release_str:
+            return redirect(url_for("index"))
+
+        try:
+            release_date = datetime.strptime(release_str, "%Y-%m-%d")
+        except ValueError:
+            return redirect(url_for("index"))
+
+        slug = slugify(title)
+
+        label_agent.create_project_structure(
+            slug=slug,
+            title=title,
+            release_date=release_date,
+            genre=style or "Inconnu",
+            artist=artist,
+            label_name=label_name,
+            use_spotify_canvas=use_spotify_canvas,
+            use_paid_ads=use_paid_ads,
+        )
+
         return redirect(url_for("index"))
 
-    slug = slugify(title)
+    except Exception as e:
+        try:
+            PROJECTS_DIR.mkdir(exist_ok=True)
+            log_path = PROJECTS_DIR / "_pulse_error.log"
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(f"\n[{datetime.now().isoformat()}] Erreur new_project:\n{repr(e)}\n")
+                print_exc(file=f)
+        except Exception:
+            pass
 
-    label_agent.create_project_structure(
-        slug=slug,
-        title=title,
-        release_date=release_date,
-        genre=style or "Inconnu",
-        artist=artist,
-        label_name=label_name,
-        use_spotify_canvas=use_spotify_canvas,
-        use_paid_ads=use_paid_ads,
-    )
+        return redirect(url_for("index"))
 
-    return redirect(url_for("index"))
 
 
 

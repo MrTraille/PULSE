@@ -1,11 +1,24 @@
 import sys
+import os
 import yaml
 from datetime import datetime, timedelta
 from pathlib import Path
 from slugify import slugify
 
-ROOT = Path(__file__).parent
-PROJECTS_DIR = ROOT / "projects"
+# Dossier de l'app (templates, plan_template.yaml)
+if getattr(sys, "frozen", False):
+    ROOT = Path(sys._MEIPASS)
+else:
+    ROOT = Path(__file__).parent.resolve()
+
+# Dossier où stocker les projets
+if getattr(sys, "frozen", False):
+    # ex : C:\Users\cyril\AppData\Local\PulseProjects
+    base = Path.home() / "AppData" / "Local"
+    PROJECTS_DIR = base / "PulseProjects"
+else:
+    PROJECTS_DIR = ROOT / "projects"
+
 TEMPLATE_FILE = ROOT / "plan_template.yaml"
 
 # -------------------------------------------------------------------
@@ -117,12 +130,26 @@ def get_genre_config(genre: str):
 # -------------------------------------------------------------------
 
 def load_template():
+    """
+    Charge plan_template.yaml.
+    Si introuvable ou cassé, renvoie un plan vide pour éviter un crash.
+    """
     if not TEMPLATE_FILE.exists():
-        print("ERREUR : plan_template.yaml introuvable.")
-        sys.exit(1)
-    with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        return {"release_plan": []}
 
+    try:
+        with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+    except Exception:
+        return {"release_plan": []}
+
+    if not isinstance(data, dict):
+        return {"release_plan": []}
+
+    if "release_plan" not in data or not isinstance(data["release_plan"], list):
+        data["release_plan"] = []
+
+    return data
 
 # -------------------------------------------------------------------
 # Création de projet

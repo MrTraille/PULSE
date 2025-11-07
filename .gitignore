@@ -10,3 +10,9 @@ __pycache__/
 
 # Données de travail
 projects/
+
+# Builds / exe
+build/
+dist/
+*.spec
+*.exe
