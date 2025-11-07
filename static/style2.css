@@ -130,7 +130,6 @@ a:hover {
   border-color: #2f8050;
 }
 
-
 /* Badges status */
 
 .pill-badge.status-programme {
@@ -150,7 +149,6 @@ a:hover {
   color: #b3f4c9;
   border: 1px solid #2f8050;
 }
-
 
 /* ---------- Nav Tabs ---------- */
 
@@ -177,12 +175,10 @@ a:hover {
   border-color: #f97316;
 }
 
-/* Barre d'onglets de la page projet */
 #projectTabs {
   border-bottom: 1px solid rgba(148, 163, 184, 0.4);
 }
 
-/* Style de base des onglets */
 #projectTabs .nav-link {
   border: none !important;
   border-radius: 0 !important;
@@ -191,15 +187,13 @@ a:hover {
   background: transparent !important;
 }
 
-/* Onglet au survol */
 #projectTabs .nav-link:hover {
   color: #e5e7eb;
 }
 
-/* Onglet actif : ligne orange en dessous */
 #projectTabs .nav-link.active {
   color: #f9fafb !important;
-  border-bottom-color: #f97316 !important;  /* la fameuse ligne orange */
+  border-bottom-color: #f97316 !important;
 }
 
 /* ---------- Cartes internes ---------- */
@@ -393,8 +387,6 @@ letter-spacing: 0.04em;
 text-transform: uppercase;
 }
 
-
-
 main.app-main {
 margin-top: 10px;
 }
@@ -480,18 +472,17 @@ box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.5);!important
   margin-bottom: 18px;
 }
 
-/* Version centrée */
 .app-header-center {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 4px;
-  margin-top: 8px;        /* décale le logo un peu plus bas */
+  margin-top: 8px;
 }
 
 .app-logo-title {
-  height: 70px;           /* taille du logo */
+  height: 70px;
   display: block;
 }
 
@@ -511,6 +502,6 @@ font-style: italic;
 .new-project-form .form-label,
 .new-project-form .form-check-label,
 .new-project-form .btn {
-  color: #18191aff; /* gris plus doux que le blanc */
+  color: #18191aff;
 }
 
