@@ -1,6 +1,6 @@
 # PULSE – Plan de release de musiques sur les plateformes de streaming
 
-Outil Flask + pywebview pour planifier les sorties (Spotify & co).
+Outil Flask + pywebview pour planifier les sorties (Spotify etc).
 
 ## Installation
 
@@ -18,3 +18,4 @@ Outil Flask desktop pour planifier les sorties (Spotify etc) :
 - gestion de projets (project.yaml, plan.md, checklist.md)
 
 - interface Flask + fenêtre desktop via pywebview
+
