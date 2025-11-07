@@ -11,16 +11,14 @@
   <body>
     <div class="app-shell">
       <div class="app-frame">
-        <header class="app-header">
-          <div class="app-logo">
-            <div class="app-logo-badge"></div>
-            <div>
-              <div class="app-title">PULSE</div>
-              <div class="app-subtitle">Planning des UpLoad, Sorties et Échéances.</div>
-            </div>
-          </div>
-          <div class="d-none d-md-block small text-end text-muted">
-            {{ datetime.utcnow().strftime("%d/%m/%Y") }}
+        <header class="app-header app-header-center">
+          <img
+            src="{{ url_for('static', filename='img/title.png') }}"
+            alt="Pulse"
+            class="app-logo-title"
+          />
+          <div class="app-subtitle mt-2">
+            PLANNING DES UPLOAD, SORTIES ET ÉCHÉANCES
           </div>
         </header>
 
@@ -30,6 +28,9 @@
 
         <footer class="app-footer">
           v0.1 · Cyril Vincent
+          <div class="d-none d-md-block small text-end text-muted">
+            {{ datetime.utcnow().strftime("%d/%m/%Y") }}
+          </div>
         </footer>
       </div>
     </div>

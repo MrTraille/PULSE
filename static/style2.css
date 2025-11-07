@@ -33,7 +33,7 @@ a {
 }
 a:hover {
   color: #ffb15c;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .container {
@@ -97,9 +97,6 @@ a:hover {
   align-items: flex-end;
   gap: 0.35rem;
 }
-
-
-
 
 /* ---------- Badges / statuts ---------- */
 
@@ -178,6 +175,31 @@ a:hover {
   color: #ffffff;
   background: transparent;
   border-color: #f97316;
+}
+
+/* Barre d'onglets de la page projet */
+#projectTabs {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+/* Style de base des onglets */
+#projectTabs .nav-link {
+  border: none !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  color: #9ca3af;
+  background: transparent !important;
+}
+
+/* Onglet au survol */
+#projectTabs .nav-link:hover {
+  color: #e5e7eb;
+}
+
+/* Onglet actif : ligne orange en dessous */
+#projectTabs .nav-link.active {
+  color: #f9fafb !important;
+  border-bottom-color: #f97316 !important;  /* la fameuse ligne orange */
 }
 
 /* ---------- Cartes internes ---------- */
@@ -371,10 +393,7 @@ letter-spacing: 0.04em;
 text-transform: uppercase;
 }
 
-.app-subtitle {
-font-size: 0.8rem;
-color: var(--at-text-muted);
-}
+
 
 main.app-main {
 margin-top: 10px;
@@ -456,3 +475,42 @@ border-color: #f97316;
 box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.5);!important
 
 }
+
+.app-header {
+  margin-bottom: 18px;
+}
+
+/* Version centrée */
+.app-header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  margin-top: 8px;        /* décale le logo un peu plus bas */
+}
+
+.app-logo-title {
+  height: 70px;           /* taille du logo */
+  display: block;
+}
+
+.app-subtitle {
+font-size: 0.6rem;
+color: var(--at-text-muted);
+opacity: 75%;
+font-style: italic;
+}
+
+.card.new-project-form {
+  background: rgba(203, 204, 214, 0.98) !important;
+  border-color: rgba(156, 163, 175, 0.7) !important;
+}
+
+.new-project-form h2,
+.new-project-form .form-label,
+.new-project-form .form-check-label,
+.new-project-form .btn {
+  color: #18191aff; /* gris plus doux que le blanc */
+}
+
