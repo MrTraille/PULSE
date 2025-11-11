@@ -1,21 +1,32 @@
-# PULSE – Plan de release de musiques sur les plateformes de streaming
+# PULSE – Plan de release de musiques + générateur de todolist
 
-Outil Flask + pywebview pour planifier les sorties (Spotify etc).
+Outil desktop (flask + pywebview) pour planifier les sorties (Spotify etc) :
+- génération de plan de release depuis `plan_template.yaml`
+- gestion de projets (project.yaml, plan.md, checklist.md)
+- interface Flask + fenêtre desktop via pywebview
 
-## Installation
+### A venir : 
+- Editer les tâches dans les projets
+- Menu déroulant pour choisir "single, EP, album, autre"
+- Tuto intéractif pour le premier lancement 
+
+## 1. Version portable : 
+
+- Télécharger la dernière version dans l’onglet **Releases** :  
+  `https://github.com/MrTraille/PULSE/releases`
+- Lancer le `.exe` directement.
+- 
+Les projets sont enregistrés ici : 
+```text
+C:\Users\<votre_nom>\AppData\Local\PulseProjects
+```
+
+## 2. Version dev :
 
 ```bash
 git clone https://github.com/MrTraille/PULSE.git
 cd PULSE
 python -m venv venv
-venv\Scripts\activate  # Windows
+venv\Scripts\activate
 pip install -r requirements.txt
-=======
-# PULSE plan de release
-
-Outil Flask desktop pour planifier les sorties (Spotify etc) :
-- génération de plan de release depuis `plan_template.yaml`
-- gestion de projets (project.yaml, plan.md, checklist.md)
-- interface Flask + fenêtre desktop via pywebview
-
-
+python run_desktop.py
