@@ -1,4 +1,5 @@
 ![Texte alternatif](static/img/title.png)
+
 Plan de release de musiques + générateur de todolist
 
 Outil desktop (flask + pywebview) pour planifier les sorties (Spotify etc) :
@@ -28,6 +29,7 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 python run_desktop.py
+
 
 
 
