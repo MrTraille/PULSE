@@ -1,11 +1,10 @@
-![Texte alternatif](static/img/title.png)
+![Logo PULSE](static/img/title.png)
 
-Plan de release de musiques + générateur de todolist
-
-Outil desktop (flask + pywebview) pour planifier les sorties (Spotify etc) :
+### <i>Outil desktop (flask + pywebview) pour planifier les sorties (Spotify etc) et générer des todolist :</i>
 - génération de plan de release depuis `plan_template.yaml`
-- gestion de projets (project.yaml, plan.md, checklist.md)
+- gestion de projets (project.yaml, checklist.md)
 - interface Flask + fenêtre desktop via pywebview
+- todolist dynamique appliquée aux projets
 
 ### A venir : 
 - Editer les tâches dans les projets (vous pouvez déjà le faire "manuellement" dans AppData/Local/PulseProjects/VotreProjet/checklist.md)
@@ -29,6 +28,7 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 python run_desktop.py
+
 
 
 
