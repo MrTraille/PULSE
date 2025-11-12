@@ -6,9 +6,7 @@ Outil desktop (flask + pywebview) pour planifier les sorties (Spotify etc) :
 - interface Flask + fenêtre desktop via pywebview
 
 ### A venir : 
-- Editer les tâches dans les projets
-- Menu déroulant pour choisir "single, EP, album, autre"
-- Tuto intéractif pour le premier lancement 
+- Editer les tâches dans les projets (vous pouvez déjà le faire "manuellement" dans AppData/Local/PulseProjects/VotreProjet/checklist.md)
 
 ## 1. Version portable : 
 
@@ -30,3 +28,4 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 python run_desktop.py
+
