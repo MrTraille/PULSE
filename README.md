@@ -1,5 +1,5 @@
 ![Texte alternatif](static/img/title.png)
-# PULSE – Plan de release de musiques + générateur de todolist
+Plan de release de musiques + générateur de todolist
 
 Outil desktop (flask + pywebview) pour planifier les sorties (Spotify etc) :
 - génération de plan de release depuis `plan_template.yaml`
@@ -28,6 +28,7 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 python run_desktop.py
+
 
 
 
