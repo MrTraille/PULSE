@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+
+
 {% block title %}{{ project.title }} - AngryTode{% endblock %}
 
 {% block content %}
@@ -55,6 +57,9 @@
 
                 <dt class="col-4">Genre</dt>
                 <dd class="col-8">{{ project.genre or "N/A" }}</dd>
+
+                <dt class="col-4">Type</dt>
+                <dd class="col-8">{{ project.release_type or "Single" }}</dd>
 
                 {% if project.use_spotify_canvas is defined %}
                   <dt class="col-4">Canvas Spotify</dt>
@@ -366,5 +371,101 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+
+  // --- Tuto par onglet (sauvé côté Python, pas localStorage) ---
+  document.addEventListener("DOMContentLoaded", function () {
+    const modalEl = document.getElementById("tabHelpModal");
+    if (!modalEl) return;
+
+    const modal = new bootstrap.Modal(modalEl);
+    const titleEl = modalEl.querySelector(".tab-help-title");
+    const bodyEl = modalEl.querySelector(".tab-help-body");
+    const okBtn = modalEl.querySelector(".tab-help-ok");
+
+    // état envoyé par Flask depuis _pulse_settings.yaml
+    const TAB_SEEN = {
+      overview: {{ 'true' if tab_help_state.overview else 'false' }},
+      checklist: {{ 'true' if tab_help_state.checklist else 'false' }},
+      deadline: {{ 'true' if tab_help_state.deadline else 'false' }},
+    };
+
+    const TAB_CONFIG = {
+      overview: {
+        title: "Onglet Aperçu",
+        body: `
+          <p>Dans cet onglet tu vois les <strong>infos principales du projet</strong> :</p>
+          <ul>
+            <li>Titre, artiste, label, genre et type (Single, EP, etc.).</li>
+            <li>Playlists cibles selon le style.</li>
+            <li>Notes libres que tu peux éditer.</li>
+            <li>Les projets sont enregistrés dans AppData/Local/PulseProjects.</li>
+          </ul>
+        `
+      },
+      checklist: {
+        title: "Onglet Checklist",
+        body: `
+          <p>La <strong>checklist globale</strong> par étape :</p>
+          <ul>
+            <li>Chaque section correspond à une capsule J-xx par rapport à la date de sortie.</li>
+            <li>Les tâches se synchronisent avec l'onglet Deadline.</li>
+          </ul>
+        `
+      },
+      deadline: {
+        title: "Onglet Deadline",
+        body: `
+          <p>Ici tu vois <strong>les tâches restantes à faire pour la prochaine deadline</strong> :</p>
+          <ul>
+            <li>Seulement les capsules en retard + celle en cours.</li>
+            <li>En cochant ici, ça met à jour la Checklist.</li>
+            <li>Les capsules terminées et dont la deadline est dépassée disparaissent.</li>
+            <li>La capsule dont la deadline n'est pas dépassée reste et est remplacée automatiquement par la suivante le jour où la deadline est dépassée.</li>
+          </ul>
+        `
+      }
+    };
+
+    function maybeShowTabHelp(tabName) {
+      const cfg = TAB_CONFIG[tabName];
+      if (!cfg) return;
+
+      // déjà vu (envoyé par le serveur) ?
+      if (TAB_SEEN[tabName]) return;
+
+      titleEl.textContent = cfg.title;
+      bodyEl.innerHTML = cfg.body;
+      modal.show();
+
+      okBtn.onclick = function () {
+        TAB_SEEN[tabName] = true;
+
+        // informer le backend pour le mémoriser dans _pulse_settings.yaml
+        fetch("{{ url_for('tab_help_seen') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tab: tabName }),
+        }).catch(() => {});
+
+        modal.hide();
+      };
+    }
+
+    // Onglet actif au chargement
+    const activeTab = document.querySelector("#projectTabs .nav-link.active");
+    if (activeTab && activeTab.id) {
+      const tabName = activeTab.id.replace("-tab", "");
+      maybeShowTabHelp(tabName);
+    }
+
+    // Lors d'un changement d'onglet
+    document.querySelectorAll("#projectTabs .nav-link").forEach(function (btn) {
+      btn.addEventListener("shown.bs.tab", function (e) {
+        const id = e.target.id; // ex: checklist-tab
+        const tabName = id.replace("-tab", "");
+        maybeShowTabHelp(tabName);
+      });
+    });
+  });
 </script>
 {% endblock %}

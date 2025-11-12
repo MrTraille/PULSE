@@ -1,8 +1,10 @@
 import threading
 import webview
 import atexit
+import sys
 from pathlib import Path
 from label_ui import app, PROJECTS_DIR
+
 
 # Chemin du fichier de log
 ERROR_LOG = PROJECTS_DIR / "_pulse_error.log"
@@ -35,9 +37,9 @@ if __name__ == "__main__":
         "PULSE",
         "http://127.0.0.1:5000/",
         width=580,
-        height=875,
+        height=1080,
         min_size=(580, 875),
         x=50,
-        y=50,
+        y=0,
     )
     webview.start()

@@ -27,6 +27,27 @@ else:
 
 TEMPLATE_FILE = ROOT / "plan_template.yaml"
 
+SETTINGS_FILE = PROJECTS_DIR / "settings.yaml"
+
+def load_settings():
+    if not SETTINGS_FILE.exists():
+        return {}
+    try:
+        import yaml
+        with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        if not isinstance(data, dict):
+            return {}
+        return data
+    except Exception:
+        return {}
+
+def save_settings(data: dict):
+    SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    import yaml
+    with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+        yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
+
 # -------------------------------------------------------------------
 # Utilitaires
 # -------------------------------------------------------------------
@@ -340,7 +361,15 @@ def index():
                 })
 
     projects.sort(key=lambda x: x["sort_key"])
-    return render_template("index.html", projects=projects)
+
+    settings = load_settings()
+    show_intro_tutorial = not settings.get("intro_seen", False)
+
+    return render_template(
+        "index.html",
+        projects=projects,
+        show_intro_tutorial=show_intro_tutorial,
+    )
 
 @app.route("/project/<slug>")
 def project_detail(slug):
@@ -409,6 +438,14 @@ def project_detail(slug):
         if current_or_future:
             next_future = min(current_or_future, key=lambda s: s["offset"])
             deadline_sections.append(next_future)
+        
+        settings = load_settings()
+        tab_help_state = {
+            "overview": bool(settings.get("tab_help_overview_seen")),
+            "checklist": bool(settings.get("tab_help_checklist_seen")),
+            "deadline": bool(settings.get("tab_help_deadline_seen")),
+        }
+
 
     return render_template(
         "project.html",
@@ -424,7 +461,32 @@ def project_detail(slug):
         max_offset=max_offset,
         notes=notes,
         deadline_sections=deadline_sections,
+        show_intro_tutorial=False,
+        tab_help_state=tab_help_state,
     )
+
+@app.route("/tutorial_seen", methods=["POST"])
+def tutorial_seen():
+    settings = load_settings()
+    settings["intro_seen"] = True
+    save_settings(settings)
+    return ("", 204)
+
+@app.route("/tab_help_seen", methods=["POST"])
+def tab_help_seen():
+    from flask import request, jsonify
+    data = request.get_json(silent=True) or {}
+    tab = data.get("tab")
+
+    if tab not in ("overview", "checklist", "deadline"):
+        return jsonify(ok=False, error="invalid-tab"), 400
+
+    settings = load_settings()
+    key = f"tab_help_{tab}_seen"
+    settings[key] = True
+    save_settings(settings)
+
+    return jsonify(ok=True)
 
 @app.route("/project/<slug>/delete", methods=["POST"])
 def delete_project(slug):
@@ -444,6 +506,7 @@ def new_project():
         artist = request.form.get("artist", "").strip() or "AngryTode"
         label_name = request.form.get("label", "").strip() or "Indépendant"
         release_str = request.form.get("release_date", "").strip()
+        release_type = request.form.get("release_type", "Single").strip() or "Single" 
         use_spotify_canvas = bool(request.form.get("use_spotify_canvas"))
         use_paid_ads = bool(request.form.get("use_paid_ads"))
 
@@ -466,6 +529,7 @@ def new_project():
             label_name=label_name,
             use_spotify_canvas=use_spotify_canvas,
             use_paid_ads=use_paid_ads,
+            release_type=release_type,
         )
 
         return redirect(url_for("index"))
@@ -473,7 +537,7 @@ def new_project():
     except Exception as e:
         try:
             PROJECTS_DIR.mkdir(exist_ok=True)
-            log_path = PROJECTS_DIR / "_pulse_error.log"
+            log_path = PROJECTS_DIR / "logfile.log"
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write(f"\n[{datetime.now().isoformat()}] Erreur new_project:\n{repr(e)}\n")
                 print_exc(file=f)

@@ -164,6 +164,7 @@ def create_project_structure(
     label_name="AngryTode",
     use_spotify_canvas=False,
     use_paid_ads=False,
+    release_type="Single",
 ):
     """Crée la structure d'un nouveau projet à partir du modèle fixe"""
     project_path = PROJECTS_DIR / slug
@@ -190,38 +191,12 @@ def create_project_structure(
         "other_playlists": genre_cfg["other_playlists"],
         "use_spotify_canvas": bool(use_spotify_canvas),
         "use_paid_ads": bool(use_paid_ads),
+        "release_type": release_type,
     }
 
     with open(project_path / "project.yaml", "w", encoding="utf-8") as f:
         yaml.dump(project_yaml, f, allow_unicode=True)
 
-    # -------------------------
-    # plan.md
-    # -------------------------
-    plan_lines = [f"# {title} - Plan de sortie AngryTode\n"]
-    for step in template["release_plan"]:
-        plan_lines.append(f"\n## {step['title']} (J{step['day_offset']})\n")
-        plan_lines.append("**Tâches :**\n")
-
-        for raw_task in step["tasks"]:
-            task = raw_task
-
-            if isinstance(raw_task, str):
-                if raw_task.startswith("[opt_spotify_canvas]"):
-                    if not use_spotify_canvas:
-                        continue
-                    task = raw_task.replace("[opt_spotify_canvas]", "").strip()
-                elif raw_task.startswith("[opt_paid_ads]"):
-                    if not use_paid_ads:
-                        continue
-                    task = raw_task.replace("[opt_paid_ads]", "").strip()
-
-            if "Masteriser le titre" in task and lufs_range:
-                task = f"Masteriser le titre ({lufs_range}, TP ≤ -1 dBTP)"
-
-            plan_lines.append(f"- [ ] {task}")
-
-    (project_path / "plan.md").write_text("\n".join(plan_lines), encoding="utf-8")
 
     # -------------------------
     # checklist.md
@@ -301,7 +276,7 @@ def cmd_new(args):
             except ValueError:
                 pass
 
-    create_project_structure(slug, title, release_date, genre)
+    create_project_structure(slug, title, release_date, genre, release_type)
 
 
 def cmd_deadline(slug):
