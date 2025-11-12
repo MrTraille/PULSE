@@ -13,8 +13,7 @@ Outil desktop (flask + pywebview) pour planifier les sorties (Spotify etc) :
 - Télécharger la dernière version dans l’onglet **Releases** :  
   `https://github.com/MrTraille/PULSE/releases`
 - Lancer le `.exe` directement.
-- 
-Les projets sont enregistrés ici : 
+- Les projets sont enregistrés ici : 
 ```text
 C:\Users\<votre_nom>\AppData\Local\PulseProjects
 ```
@@ -28,4 +27,5 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 python run_desktop.py
+
 
